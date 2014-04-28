@@ -37,20 +37,7 @@ write.table(finalTidyData, "OutputMergedData.txt")
 
 ## 5) Creates a second, independent tidy data set with the average of each variable for each activity and each subject. 
 
-uniqueSubjects = unique(subject)[,1]
-numSubjects = length(unique(subject)[,1])
-numActivities = length(activities[,1])
-numCols = dim(finalTidyData)[2]
-result = finalTidyData[1:(numSubjects*numActivities), ]
+molten = melt(finalTidyData, id.vars=c("subject","activity"))
+final = dcast(molten, subject + activity ~ variable , mean)
 
-row = 1
-for (s in 1:numSubjects) {
-  for (a in 1:numActivities) {
-    result[row, 1] = uniqueSubjects[s]
-    result[row, 2] = activities[a, 2]
-    tmp <- finalTidyData[finalTidyData$subject==s & finalTidyData$activity==activities[a, 2], ]
-    result[row, 3:numCols] <- colMeans(tmp[, 3:numCols])
-    row = row+1
-  }
-}
-write.table(result, "OutputTidyData.txt")
+write.table(final, "OutputTidyData.txt")
